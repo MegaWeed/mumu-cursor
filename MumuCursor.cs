@@ -365,10 +365,12 @@ class Pendant
     public const double TiltGain = 1.2e-6, TiltMax = 0.05;
     public const double RopeLen = 66;
     public const int NSEG = 7;
-    public const double RopeGravity = 3200, RopeDamp = 0.988;
+    // RopeDamp 调小阻尼（0.988 → 0.996），甩一下能绕过顶点整圈转；Iterations 加到 8，高速转圈时绳长不被拉长
+    public const double RopeGravity = 3200, RopeDamp = 0.996;
     public const double Step = 1.0 / 150.0;
-    public const int Iterations = 4;
-    public const int PAD = 96;
+    public const int Iterations = 8;
+    public const double BendK = 0.18;   // 弱抗弯：绳子转过头顶时不折成一团，仍像一根软绳
+    public const int PAD = 150;         // 360° 甩动时悬挂物可能在主体左右任意一侧，左右留够边
 
     public Look L;
     public bool ShowCursorImage;   // 仅预览用：把系统光标图一起画出来
@@ -426,24 +428,19 @@ class Pendant
                 nx[i] += dx * diff; ny[i] += dy * diff;
                 nx[i + 1] -= dx * diff; ny[i + 1] -= dy * diff;
             }
+            // 隔一节拉一下（只在被压短时），给绳子一点点“骨架”，整圈甩时不会对折
+            for (int i = 0; i + 2 <= NSEG; i++)
+            {
+                double dx = nx[i + 2] - nx[i], dy = ny[i + 2] - ny[i];
+                double d = Math.Sqrt(dx * dx + dy * dy);
+                if (d < 1e-6 || d >= 2 * seg) continue;
+                double diff = (d - 2 * seg) / d * 0.5 * BendK;
+                if (i > 0) { nx[i] += dx * diff; ny[i] += dy * diff; }
+                nx[i + 2] -= dx * diff; ny[i + 2] -= dy * diff;
+            }
             nx[0] = px; ny[0] = py;
         }
-        double ex = nx[NSEG] - nx[0], ey = ny[NSEG] - ny[0];
-        double ang = Math.Atan2(ex, ey);
-        const double MAX_ANG = 0.80;
-        if (Math.Abs(ang) > MAX_ANG)
-        {
-            double adj = Math.Sign(ang) * (Math.Abs(ang) - MAX_ANG);
-            double c = Math.Cos(adj), s = Math.Sin(adj);
-            for (int i = 1; i <= NSEG; i++)
-            {
-                double rx = nx[i] - nx[0], ry = ny[i] - ny[0];
-                nx[i] = nx[0] + rx * c - ry * s;
-                ny[i] = ny[0] + rx * s + ry * c;
-                npx[i] = nx[i] - (nx[i] - npx[i]) * 0.35;
-                npy[i] = ny[i] - (ny[i] - npy[i]) * 0.35;
-            }
-        }
+        // 以前这里把摆角限制在 ±0.8 rad（约 46°），现在去掉，允许 360° 绕挂点转
     }
 
     public void Click()
@@ -955,7 +952,8 @@ class Overlay
     public Overlay(Look l)
     {
         P = new Pendant(l);
-        PadX = Pendant.PAD; PadY = 20;
+        // 悬挂物能甩到挂点正上方，上面也要留出 绳长 + 物品 的空间
+        PadX = Pendant.PAD; PadY = 20 + (int)Pendant.RopeLen + 90;
         W = PadX * 2 + 150;
         H = PadY + 160 + (int)Pendant.RopeLen + 90;
         // 注意：窗口在 Run() 里由渲染线程自己创建（见 Create 调用处）
