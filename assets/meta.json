@@ -1,0 +1,140 @@
+{
+ "bodyDefault": [
+  99,
+  100
+ ],
+ "pivot": [
+  42,
+  96
+ ],
+ "bodyAvatar": [
+  228,
+  228
+ ],
+ "coin": [
+  67,
+  63
+ ],
+ "pointers": {
+  "chevron_silver": [
+   10,
+   10
+  ],
+  "chevron_gold": [
+   10,
+   10
+  ],
+  "chevron_neon": [
+   10,
+   10
+  ],
+  "chevron_ink": [
+   10,
+   10
+  ],
+  "chevron_bubble": [
+   10,
+   10
+  ],
+  "arrow_silver": [
+   9,
+   6
+  ],
+  "arrow_gold": [
+   9,
+   6
+  ],
+  "arrow_neon": [
+   9,
+   6
+  ],
+  "arrow_ink": [
+   9,
+   6
+  ],
+  "arrow_bubble": [
+   9,
+   6
+  ],
+  "cross_silver": [
+   21,
+   21
+  ],
+  "cross_gold": [
+   21,
+   21
+  ],
+  "cross_neon": [
+   21,
+   21
+  ],
+  "cross_ink": [
+   21,
+   21
+  ],
+  "cross_bubble": [
+   21,
+   21
+  ],
+  "ring_silver": [
+   21,
+   21
+  ],
+  "ring_gold": [
+   21,
+   21
+  ],
+  "ring_neon": [
+   21,
+   21
+  ],
+  "ring_ink": [
+   21,
+   21
+  ],
+  "ring_bubble": [
+   21,
+   21
+  ],
+  "diamond_silver": [
+   21,
+   21
+  ],
+  "diamond_gold": [
+   21,
+   21
+  ],
+  "diamond_neon": [
+   21,
+   21
+  ],
+  "diamond_ink": [
+   21,
+   21
+  ],
+  "diamond_bubble": [
+   21,
+   21
+  ],
+  "move_silver": [
+   21,
+   21
+  ],
+  "move_gold": [
+   21,
+   21
+  ],
+  "move_neon": [
+   21,
+   21
+  ],
+  "move_ink": [
+   21,
+   21
+  ],
+  "move_bubble": [
+   21,
+   21
+  ]
+ }
+}
