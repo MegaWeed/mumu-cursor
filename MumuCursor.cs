@@ -2292,8 +2292,13 @@ class MainForm : Form
         b2.Click += (a, b) => { C.BodyKind = "avatar"; RefreshThumbs(); Save(); FillSettings(); };
         var b3 = new Thumb { Pic = Art.Res("static_full.png"), Text = "静态图", Location = new Point(200, y), Size = new Size(88, 90), Selected = C.BodyKind == "static" };
         b3.Click += (a, b) => { C.BodyKind = "static"; RefreshThumbs(); Save(); FillSettings(); };
-        var b4 = new Thumb { Pic = C.BodyKind == "custom" && File.Exists(C.CustomBody) ? Art.LoadFile(C.CustomBody, 90) : null, Text = "本地上传", Upload = true, Location = new Point(292, y), Size = new Size(88, 90), Selected = C.BodyKind == "custom" };
-        b4.Click += (a, b) => { UploadBody(); };
+        var b4 = new Thumb { Pic = File.Exists(C.CustomBody) ? Art.LoadFile(C.CustomBody, 90) : null, Text = "本地上传", Upload = true, Location = new Point(292, y), Size = new Size(88, 90), Selected = C.BodyKind == "custom" };
+        // 已经上传过且当前没选中：点一下先切回这张；已选中再点才重新上传
+        b4.Click += (a, b) =>
+        {
+            if (C.BodyKind != "custom" && File.Exists(C.CustomBody)) { C.BodyKind = "custom"; RefreshThumbs(); Save(); FillSettings(); }
+            else UploadBody();
+        };
         bodyThumbs.Add(b1); bodyThumbs.Add(b2); bodyThumbs.Add(b3); bodyThumbs.Add(b4);
         foreach (var t in bodyThumbs) settings.Controls.Add(t);
         y += 96;
@@ -2340,8 +2345,12 @@ class MainForm : Form
         Section(y, "④ 悬挂物", "绳子末端那个会跳的金币"); y += 30;
         var i1 = new Thumb { Pic = Art.Res("item_coin.png"), Text = "金币", Location = new Point(16, y), Size = new Size(96, 90), Selected = C.ItemKind == "coin" };
         i1.Click += (a, b) => { C.ItemKind = "coin"; RefreshThumbs(); Save(); };
-        var i2 = new Thumb { Pic = C.ItemKind == "custom" && File.Exists(C.CustomItem) ? Art.LoadFile(C.CustomItem, 90) : null, Text = "本地上传", Upload = true, Location = new Point(122, y), Size = new Size(96, 90), Selected = C.ItemKind == "custom" };
-        i2.Click += (a, b) => { UploadItem(); };
+        var i2 = new Thumb { Pic = File.Exists(C.CustomItem) ? Art.LoadFile(C.CustomItem, 90) : null, Text = "本地上传", Upload = true, Location = new Point(122, y), Size = new Size(96, 90), Selected = C.ItemKind == "custom" };
+        i2.Click += (a, b) =>
+        {
+            if (C.ItemKind != "custom" && File.Exists(C.CustomItem)) { C.ItemKind = "custom"; RefreshThumbs(); Save(); }
+            else UploadItem();
+        };
         itemThumbs.Add(i1); itemThumbs.Add(i2);
         foreach (var t in itemThumbs) settings.Controls.Add(t);
         y += 96;
@@ -2518,8 +2527,8 @@ class MainForm : Form
                     string outPath = Path.Combine(dir, "body.png");
                     cf.Result.Save(outPath, ImageFormat.Png);
                     C.CustomBody = outPath; C.BodyKind = "custom";
-                    bodyThumbs[2].Pic = Art.LoadFile(outPath, 90);
-                    bodyThumbs[2].Upload = false;
+                    // 「本地上传」是第 4 个（下标 3）；以前写成 2，图被画到了「静态图」那格上
+                    bodyThumbs[3].Pic = Art.LoadFile(outPath, 90);
                     RefreshThumbs(); Save();
                 }
                 catch (Exception ex)
@@ -2546,7 +2555,6 @@ class MainForm : Form
                     cf.Result.Save(outPath, ImageFormat.Png);
                     C.CustomItem = outPath; C.ItemKind = "custom";
                     itemThumbs[1].Pic = Art.LoadFile(outPath, 90);
-                    itemThumbs[1].Upload = false;
                     RefreshThumbs(); Save();
                 }
                 catch (Exception ex)
