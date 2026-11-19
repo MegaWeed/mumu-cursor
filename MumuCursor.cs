@@ -3532,8 +3532,7 @@ static class Program
         try { File.AppendAllText(Path.Combine(Path.GetTempPath(), "mumu_main.log"), DateTime.Now.ToString("HH:mm:ss.fff") + " " + m + "\n"); } catch { }
     }
 
-    [STAThread]
-static void DumpCursor(string file)
+    static void DumpCursor(string file)
     {
         try
         {
@@ -3556,6 +3555,7 @@ static void DumpCursor(string file)
         catch (Exception ex) { Console.WriteLine("dump err " + ex.Message); }
     }
 
+    [STAThread]
     static void Main(string[] args)
     {
         Trace("main start args=" + string.Join(" ", args));
